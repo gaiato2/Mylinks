@@ -31,25 +31,16 @@ const App: React.FC = () => {
         </button>
 
         {/* 1. Commission Status */}
-        <div className="mb-8 animate-fade-in-down">
+        <div className="mb-10 animate-fade-in-down">
           <CommissionStatus status={CONFIG.status} />
         </div>
 
-        {/* 2. Profile Section */}
-        <div className="flex flex-col items-center mb-12 text-center">
-          <div className="relative group mb-6">
-            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-purple-600 rounded-[2rem] blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
-            <img 
-              src={CONFIG.profileImage} 
-              alt={CONFIG.artistName}
-              className="relative w-32 h-32 md:w-40 md:h-40 rounded-[1.8rem] object-cover border-2 border-white/10 shadow-2xl"
-            />
-          </div>
-          
-          <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-200 via-white to-purple-200 mb-2 drop-shadow-sm">
+        {/* 2. Header Section (No Profile Image) */}
+        <div className="flex flex-col items-center mb-16 text-center">
+          <h1 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-200 via-white to-purple-200 mb-4 drop-shadow-sm font-hand">
             {CONFIG.artistName}
           </h1>
-          <p className="text-purple-200/80 font-light tracking-wide">
+          <p className="text-purple-200/80 font-light tracking-wide text-lg">
             {CONFIG.tagline}
           </p>
         </div>

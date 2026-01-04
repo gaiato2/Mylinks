@@ -15,7 +15,6 @@ export interface LinkItem {
 export interface AppConfig {
   artistName: string;
   tagline: string;
-  profileImage: string;
   status: CommissionStatus;
   links: LinkItem[];
 }

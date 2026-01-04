@@ -126,22 +126,16 @@
     </button>
 
     <!-- Main Content Area -->
-    <main class="relative z-10 flex flex-col items-center w-full max-w-xl mx-auto px-6 py-16 min-h-screen">
+    <main class="relative z-10 flex flex-col items-center w-full max-w-xl mx-auto px-6 py-24 min-h-screen">
         
         <!-- Commission Status Badge -->
-        <div id="status-container" class="mb-10 animate-float"></div>
+        <div id="status-container" class="mb-12 animate-float"></div>
 
-        <!-- Artist Profile -->
-        <div class="flex flex-col items-center mb-14 text-center">
-            <div class="relative group mb-6">
-                <!-- Decorative "tape" element -->
-                <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-white/10 rotate-[-2deg] backdrop-blur-sm z-20 pointer-events-none" style="clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%);"></div>
-                
-                <img id="profile-img" src="" alt="Profile" class="stitched relative w-36 h-36 object-cover bg-slate-800">
-            </div>
+        <!-- Artist Profile / Header -->
+        <div class="flex flex-col items-center mb-16 text-center">
             
-            <h1 id="artist-name" class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-white to-purple-200 mb-3 hand-font drop-shadow-sm tracking-wide"></h1>
-            <p id="tagline" class="text-purple-200/90 text-lg tracking-wide font-medium"></p>
+            <h1 id="artist-name" class="text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-white to-purple-200 mb-6 hand-font drop-shadow-sm tracking-wide"></h1>
+            <p id="tagline" class="text-purple-200/90 text-xl tracking-wide font-medium"></p>
         </div>
 
         <!-- Links List -->
@@ -165,17 +159,6 @@
       const CONFIG = {
           artistName: "Clair",
           tagline: "Digital Sculptor & 3D modeler",
-          
-          /**
-           * 🖼️ PROFILE IMAGE
-           * Currently set to a placeholder so the site works.
-           * 
-           * TO USE YOUR OWN IMAGE:
-           * 1. Create an 'images' folder next to this index.html.
-           * 2. Put your file in it (e.g. 'my-photo.png').
-           * 3. Change the line below to: profileImage: "./images/my-photo.png",
-           */
-          profileImage: "./images/my-photo.jpg", 
           
           // STATUS: 'OPEN', 'CLOSED', 'WAITLIST'
           status: 'CLOSED', 
@@ -215,19 +198,7 @@
           document.getElementById('tagline').textContent = CONFIG.tagline;
           document.getElementById('year').textContent = new Date().getFullYear();
           
-          // Set Profile Image and Handle Errors
-          const imgEl = document.getElementById('profile-img');
-          imgEl.src = CONFIG.profileImage;
-          imgEl.onerror = function() {
-            // Only log if the user attempts to load a custom image that fails
-            if (CONFIG.profileImage !== "https://picsum.photos/400/400") {
-               console.error("❌ Could not load profile image at:", CONFIG.profileImage);
-               console.log("💡 Tip: Check if the file exists in the 'images' folder and that the name matches exactly (including casing and extension).");
-            }
-            // Fallback to a placeholder
-            this.src = "https://picsum.photos/400/400"; 
-          };
-
+          // Render dynamic sections
           renderStatus();
           renderLinks();
 
