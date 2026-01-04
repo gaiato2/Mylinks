@@ -1,13 +1,13 @@
 import { AppConfig, CommissionStatus } from './types';
 
 export const CONFIG: AppConfig = {
-  artistName: "Nova Artistry",
-  tagline: "Digital Illustrator & Concept Artist",
+  artistName: "Clair",
+  tagline: "Digital Sculptor & 3D modeler",
   // Using a placeholder image - replace with your actual URL
   profileImage: "https://picsum.photos/400/400", 
   
   // CHANGE THIS TO TOGGLE STATUS: CommissionStatus.OPEN or CommissionStatus.CLOSED
-  status: CommissionStatus.OPEN,
+  status: CommissionStatus.CLOSED,
 
   links: [
     {
