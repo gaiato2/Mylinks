@@ -4,78 +4,153 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Artist Hub</title>
-    <!-- Tailwind CSS for styling -->
+    
+    <!-- 
+      ========================================
+      🎨 CUSTOMIZATION GUIDE
+      ========================================
+      
+      1. FONTS: 
+         We are using Google Fonts. 
+         - 'Patrick Hand': For the handwritten, artistic headings.
+         - 'Quicksand': For clean, rounded, friendly body text.
+         To change fonts, replace the <link> below with new ones from fonts.google.com
+         and update the CSS variables in the <style> tag.
+
+      2. COLORS & BORDERS:
+         Look for the :root {} section in the <style> tag below.
+         - --primary-color: Controls the main green accent.
+         - --secondary-color: Controls the purple accent.
+         - --stitch-color: The color of the dashed border lines.
+    -->
+    
+    <!-- Google Fonts Import -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS (for layout) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons for vector icons -->
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
+      :root {
+        /* -- 🎨 CONFIGURABLE COLORS -- */
+        --bg-dark: #131318;
+        --primary-color: #6ee7b7;   /* Soft Emerald */
+        --secondary-color: #d8b4fe; /* Soft Purple */
+        --stitch-color: rgba(255, 255, 255, 0.3);
+        
+        /* -- 🔡 FONTS -- */
+        --font-heading: 'Patrick Hand', cursive;
+        --font-body: 'Quicksand', sans-serif;
+      }
+
       body {
         margin: 0;
         overflow-x: hidden;
-        background-color: #0f0f15;
+        background-color: var(--bg-dark);
+        font-family: var(--font-body);
+        color: #e2e8f0;
       }
+
+      /* Typography Overrides */
+      h1, h2, h3, .hand-font {
+        font-family: var(--font-heading);
+      }
+
+      /* 
+         --- THE "STITCHED" LOOK --- 
+         This class creates the wobbly, hand-cut paper effect 
+         using irregular border-radius values.
+      */
+      .stitched {
+        border: 2px dashed var(--stitch-color);
+        /* The magic numbers below make the corners look organic/imperfect */
+        border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+        box-shadow: 4px 4px 0px rgba(0,0,0,0.3); /* Hard shadow for cutout feel */
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      /* Hover effects for interactive elements */
+      .stitched-interactive:hover {
+        transform: rotate(-1deg) scale(1.02);
+        border-color: var(--primary-color);
+        box-shadow: 6px 6px 0px rgba(16, 185, 129, 0.2);
+      }
+      
+      .stitched-interactive:active {
+        transform: scale(0.98);
+        box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+      }
+
       /* Custom Scrollbar */
       ::-webkit-scrollbar { width: 8px; }
       ::-webkit-scrollbar-track { background: #1a1a2e; }
-      ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 4px; }
-      ::-webkit-scrollbar-thumb:hover { background: #6d28d9; }
-      
-      /* Animation Keyframes */
-      @keyframes fadeInDown {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+      ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 10px; }
+
+      /* Animations */
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+        100% { transform: translateY(0px); }
       }
-      .animate-fade-in-down {
-        animation: fadeInDown 0.7s ease-out forwards;
-      }
+      .animate-float { animation: float 4s ease-in-out infinite; }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
     "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
     "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
   }
 }
 </script>
 </head>
-<body class="text-white font-sans selection:bg-emerald-500/30">
+<body class="selection:bg-purple-500/30">
 
-    <!-- Background Layers -->
-    <div class="fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950 via-purple-950 to-emerald-950"></div>
-    <canvas id="starfield" class="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none"></canvas>
+    <!-- Background: Texture and Gradient -->
+    <!-- Added a subtle noise texture URL (placeholder) to give paper feel, fallback to gradient -->
+    <div class="fixed inset-0 z-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-950/80 via-[#1a1a24] to-[#0f0f12]"></div>
     
-    <!-- Interactive Cursor Layer -->
+    <!-- Starfield Canvas -->
+    <canvas id="starfield" class="fixed inset-0 z-0 opacity-60 mix-blend-screen pointer-events-none"></canvas>
+    
+    <!-- Cursor Trail Canvas -->
     <canvas id="pawtrail" class="fixed inset-0 z-50 pointer-events-none hidden md:block"></canvas>
 
-    <!-- Toggle Button for Cursor Trail -->
-    <button id="trail-toggle" onclick="toggleTrails()" class="fixed bottom-4 right-4 z-[60] p-2 rounded-full bg-black/40 border border-white/10 hover:bg-white/10 text-white/50 hover:text-white transition-all backdrop-blur-sm hidden md:flex" title="Toggle Cursor Trail">
-        <i data-lucide="eye" class="w-4 h-4"></i>
+    <!-- Toggle Button -->
+    <button id="trail-toggle" onclick="toggleTrails()" class="stitched stitched-interactive fixed bottom-6 right-6 z-[60] p-3 bg-slate-900/80 text-white/70 hover:text-white backdrop-blur-sm hidden md:flex items-center justify-center" title="Toggle Cursor Trail">
+        <i data-lucide="eye" class="w-5 h-5"></i>
     </button>
 
-    <!-- Main Content -->
-    <main class="relative z-10 flex flex-col items-center w-full max-w-2xl mx-auto px-6 py-12 min-h-screen">
+    <!-- Main Content Area -->
+    <main class="relative z-10 flex flex-col items-center w-full max-w-xl mx-auto px-6 py-16 min-h-screen">
         
-        <!-- Commission Status -->
-        <div id="status-container" class="mb-8 animate-fade-in-down"></div>
+        <!-- Commission Status Badge -->
+        <div id="status-container" class="mb-10 animate-float"></div>
 
-        <!-- Profile -->
-        <div class="flex flex-col items-center mb-12 text-center">
+        <!-- Artist Profile -->
+        <div class="flex flex-col items-center mb-14 text-center">
             <div class="relative group mb-6">
-                <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-purple-600 rounded-[2rem] blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                <img id="profile-img" src="" alt="Profile" class="relative w-32 h-32 md:w-40 md:h-40 rounded-[1.8rem] object-cover border-2 border-white/10 shadow-2xl">
+                <!-- Decorative "tape" element -->
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-white/10 rotate-[-2deg] backdrop-blur-sm z-20 pointer-events-none" style="clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%);"></div>
+                
+                <img id="profile-img" src="" alt="Profile" class="stitched relative w-36 h-36 object-cover bg-slate-800">
             </div>
             
-            <h1 id="artist-name" class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-200 via-white to-purple-200 mb-2 drop-shadow-sm"></h1>
-            <p id="tagline" class="text-purple-200/80 font-light tracking-wide"></p>
+            <h1 id="artist-name" class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-white to-purple-200 mb-3 hand-font drop-shadow-sm tracking-wide"></h1>
+            <p id="tagline" class="text-purple-200/90 text-lg tracking-wide font-medium"></p>
         </div>
 
         <!-- Links List -->
-        <div id="links-list" class="w-full flex flex-col items-center space-y-4 pb-20"></div>
+        <div id="links-list" class="w-full flex flex-col items-center space-y-5 pb-20"></div>
 
         <!-- Footer -->
-        <footer class="mt-auto text-white/20 text-sm font-light">
-            © <span id="year"></span> <span id="footer-name"></span>
+        <footer class="mt-auto text-white/30 text-sm font-light flex flex-col items-center gap-2">
+           <div class="w-12 h-0.5 bg-white/10 rounded-full mb-2"></div>
+           <p>Handcrafted by <span id="footer-name" class="hand-font text-lg text-white/50"></span> © <span id="year"></span></p>
         </footer>
 
     </main>
@@ -83,32 +158,32 @@
     <script>
       /**
        *  ========================================
-       *  🎨 CONFIGURATION SECTION
-       *  Edit these values to customize the site
+       *  📝 CONTENT CONFIGURATION
+       *  Edit the text and links below.
        *  ========================================
        */
       const CONFIG = {
-          artistName: "Nova Artistry",
-          tagline: "Digital Illustrator & Concept Artist",
+          artistName: "Clair",
+          tagline: "Digital Sculptor & 3D modeler",
           profileImage: "https://picsum.photos/400/400",
           
-          // STATUS OPTIONS: 'OPEN', 'CLOSED', 'WAITLIST'
-          status: 'OPEN', 
+          // STATUS: 'OPEN', 'CLOSED', 'WAITLIST'
+          status: 'CLOSED', 
 
           links: [
             {
               label: 'Instagram',
-              url: 'https://instagram.com',
+              url: 'https://www.instagram.com/clairdearts/',
               icon: 'instagram'
             },
             {
               label: 'Reddit',
-              url: 'https://reddit.com',
+              url: 'https://www.reddit.com/user/Gaiato2_0/',
               icon: 'message-circle'
             },
             {
               label: 'TOS das Comissões (Português)',
-              url: '#',
+              url: 'https://docs.google.com/document/d/1y_DkdvNLDyMr6gcbrrHy9bGb3rnMoyu0NMk861X5C7M/edit?usp=sharing',
               icon: 'file-text'
             },
             {
@@ -120,22 +195,21 @@
       };
 
       // ==========================================
-      // 🚀 MAIN LOGIC
+      // 🚀 APP LOGIC
       // ==========================================
 
       document.addEventListener('DOMContentLoaded', () => {
-          // Set Text Content
+          // Fill Content
           document.getElementById('artist-name').textContent = CONFIG.artistName;
           document.getElementById('footer-name').textContent = CONFIG.artistName;
           document.getElementById('tagline').textContent = CONFIG.tagline;
           document.getElementById('year').textContent = new Date().getFullYear();
           document.getElementById('profile-img').src = CONFIG.profileImage;
 
-          // Render Dynamic Content
           renderStatus();
           renderLinks();
 
-          // Initialize Libs & Effects
+          // Init Effects
           lucide.createIcons();
           initStarfield();
           initPawTrail();
@@ -145,23 +219,26 @@
           const container = document.getElementById('status-container');
           let content = '';
           
+          // Common classes for the status badge
+          const baseClasses = "stitched px-5 py-2 flex items-center gap-3 bg-black/20 backdrop-blur-sm";
+          
           if (CONFIG.status === 'OPEN') {
               content = `
-                <div class="inline-flex items-center px-4 py-2 rounded-full border backdrop-blur-md transition-transform hover:scale-105 bg-emerald-900/40 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-                    <span class="text-emerald-300 animate-pulse mr-2"><i data-lucide="check-circle-2" class="w-4 h-4"></i></span>
-                    <span class="text-xs font-bold tracking-widest text-emerald-300">COMMISSIONS OPEN</span>
+                <div class="${baseClasses} border-emerald-500/50 text-emerald-200">
+                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                    <span class="font-bold tracking-widest text-sm">COMMISSIONS OPEN</span>
                 </div>`;
           } else if (CONFIG.status === 'CLOSED') {
               content = `
-                <div class="inline-flex items-center px-4 py-2 rounded-full border backdrop-blur-md transition-transform hover:scale-105 bg-rose-900/40 border-rose-500/50 shadow-[0_0_10px_rgba(244,63,94,0.2)]">
-                    <span class="text-rose-300 animate-pulse mr-2"><i data-lucide="x-circle" class="w-4 h-4"></i></span>
-                    <span class="text-xs font-bold tracking-widest text-rose-300">COMMISSIONS CLOSED</span>
+                <div class="${baseClasses} border-rose-500/50 text-rose-300">
+                    <i data-lucide="x-circle" class="w-5 h-5"></i>
+                    <span class="font-bold tracking-widest text-sm">COMMISSIONS CLOSED</span>
                 </div>`;
           } else {
              content = `
-                <div class="inline-flex items-center px-4 py-2 rounded-full border backdrop-blur-md transition-transform hover:scale-105 bg-amber-900/40 border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.2)]">
-                    <span class="text-amber-300 animate-pulse mr-2"><i data-lucide="clock" class="w-4 h-4"></i></span>
-                    <span class="text-xs font-bold tracking-widest text-amber-300">WAITLIST ONLY</span>
+                <div class="${baseClasses} border-amber-500/50 text-amber-300">
+                    <i data-lucide="clock" class="w-5 h-5"></i>
+                    <span class="font-bold tracking-widest text-sm">WAITLIST ONLY</span>
                 </div>`;
           }
           container.innerHTML = content;
@@ -169,33 +246,38 @@
 
       function renderLinks() {
           const list = document.getElementById('links-list');
-          CONFIG.links.forEach(link => {
+          CONFIG.links.forEach((link, index) => {
               const a = document.createElement('a');
               a.href = link.url;
               a.target = "_blank";
               a.rel = "noopener noreferrer";
+              
+              // Apply the stitched class + some random rotation for "messy" feel
+              const rotate = (index % 2 === 0) ? 'rotate-[1deg]' : 'rotate-[-1deg]';
+              
               a.className = `
-                group relative w-full max-w-md p-4 flex items-center justify-between
-                bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-400/50
-                rounded-xl backdrop-blur-sm transition-all duration-300 ease-out
-                hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(52,211,153,0.15)] overflow-hidden
+                stitched stitched-interactive
+                w-full max-w-md p-4 flex items-center justify-between
+                bg-slate-800/40 hover:bg-slate-800/60
+                text-white transition-all duration-300
+                ${rotate}
               `;
               
               a.innerHTML = `
-                <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="flex items-center z-10">
-                    <div class="p-2 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors mr-4">
-                        <i data-lucide="${link.icon}" class="w-6 h-6 text-emerald-200 group-hover:text-emerald-100"></i>
+                <div class="flex items-center gap-4">
+                    <div class="text-emerald-300 opacity-80">
+                        <i data-lucide="${link.icon}" class="w-6 h-6"></i>
                     </div>
-                    <span class="text-emerald-50 font-medium text-lg tracking-wide group-hover:text-white transition-colors">${link.label}</span>
+                    <span class="text-lg font-semibold hand-font tracking-wide">${link.label}</span>
                 </div>
-                <i data-lucide="arrow-right" class="w-5 h-5 text-purple-300 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all z-10"></i>
+                <i data-lucide="arrow-right" class="w-5 h-5 text-purple-300 opacity-60"></i>
               `;
               list.appendChild(a);
           });
       }
 
-      // Starfield Effect
+      // -- EFFECTS (Unchanged Logic, just visual tweaks) --
+
       function initStarfield() {
           const canvas = document.getElementById('starfield');
           const ctx = canvas.getContext('2d');
@@ -209,13 +291,13 @@
 
           function createStars() {
               stars = [];
-              const count = Math.floor((canvas.width * canvas.height) / 3000);
+              const count = Math.floor((canvas.width * canvas.height) / 4000); // Less stars for calmer feel
               for(let i=0; i<count; i++) {
                   stars.push({
                       x: Math.random() * canvas.width,
                       y: Math.random() * canvas.height,
                       size: Math.random() * 2,
-                      speed: Math.random() * 0.05 + 0.01,
+                      speed: Math.random() * 0.02 + 0.005, // Slower speed
                       opacity: Math.random(),
                       baseOpacity: Math.random() * 0.5 + 0.1
                   });
@@ -227,9 +309,10 @@
               const time = Date.now() * 0.001;
               
               stars.forEach(star => {
-                  const flicker = Math.sin(time * (star.speed * 100) + star.x) * 0.3;
-                  const op = Math.max(0.1, Math.min(1, star.baseOpacity + flicker));
-                  ctx.fillStyle = `rgba(255, 255, 255, ${op})`;
+                  const flicker = Math.sin(time * (star.speed * 50) + star.x) * 0.2; // Gentler flicker
+                  const op = Math.max(0.1, Math.min(0.8, star.baseOpacity + flicker));
+                  
+                  ctx.fillStyle = `rgba(200, 230, 200, ${op})`; // Slightly greenish stars
                   ctx.beginPath();
                   ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
                   ctx.fill();
@@ -242,7 +325,6 @@
           animate();
       }
 
-      // Paw Trail Effect
       let trailsActive = true;
       function toggleTrails() {
           trailsActive = !trailsActive;
@@ -282,7 +364,7 @@
                   x, y,
                   rotation: Math.random() * 1.5 - 0.75,
                   life: 1.0,
-                  size: 24
+                  size: 20 // Slightly smaller paws
               });
           }
 
@@ -291,7 +373,7 @@
               
               for (let i = particles.length - 1; i >= 0; i--) {
                   let p = particles[i];
-                  p.life -= 0.02;
+                  p.life -= 0.015; // Slower fade
                   if (p.life <= 0) {
                       particles.splice(i, 1);
                       continue;
@@ -299,7 +381,7 @@
                   ctx.save();
                   ctx.translate(p.x, p.y);
                   ctx.rotate(p.rotation);
-                  ctx.globalAlpha = p.life;
+                  ctx.globalAlpha = p.life * 0.6; // Softer paws
                   ctx.font = `${p.size}px serif`;
                   ctx.fillStyle = '#d8b4fe';
                   ctx.textAlign = 'center';
