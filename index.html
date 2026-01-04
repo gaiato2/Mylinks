@@ -165,7 +165,17 @@
       const CONFIG = {
           artistName: "Clair",
           tagline: "Digital Sculptor & 3D modeler",
-          profileImage: "images/Foto de perfil-min.png",
+          
+          /**
+           * 🖼️ PROFILE IMAGE
+           * Currently set to a placeholder so the site works.
+           * 
+           * TO USE YOUR OWN IMAGE:
+           * 1. Create an 'images' folder next to this index.html.
+           * 2. Put your file in it (e.g. 'my-photo.png').
+           * 3. Change the line below to: profileImage: "./images/my-photo.png",
+           */
+          profileImage: "./images/my-photo.png", 
           
           // STATUS: 'OPEN', 'CLOSED', 'WAITLIST'
           status: 'CLOSED', 
@@ -204,7 +214,19 @@
           document.getElementById('footer-name').textContent = CONFIG.artistName;
           document.getElementById('tagline').textContent = CONFIG.tagline;
           document.getElementById('year').textContent = new Date().getFullYear();
-          document.getElementById('profile-img').src = CONFIG.profileImage;
+          
+          // Set Profile Image and Handle Errors
+          const imgEl = document.getElementById('profile-img');
+          imgEl.src = CONFIG.profileImage;
+          imgEl.onerror = function() {
+            // Only log if the user attempts to load a custom image that fails
+            if (CONFIG.profileImage !== "https://picsum.photos/400/400") {
+               console.error("❌ Could not load profile image at:", CONFIG.profileImage);
+               console.log("💡 Tip: Check if the file exists in the 'images' folder and that the name matches exactly (including casing and extension).");
+            }
+            // Fallback to a placeholder
+            this.src = "https://picsum.photos/400/400"; 
+          };
 
           renderStatus();
           renderLinks();

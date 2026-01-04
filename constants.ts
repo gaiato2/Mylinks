@@ -4,7 +4,7 @@ export const CONFIG: AppConfig = {
   artistName: "Clair",
   tagline: "Digital Sculptor & 3D modeler",
   // Using a placeholder image - replace with your actual URL
-  profileImage: "https://picsum.photos/400/400", 
+  profileImage: "./images/photo.png", 
   
   // CHANGE THIS TO TOGGLE STATUS: CommissionStatus.OPEN or CommissionStatus.CLOSED
   status: CommissionStatus.CLOSED,
