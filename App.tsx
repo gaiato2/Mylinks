@@ -3,8 +3,42 @@ import Starfield from './components/Starfield';
 import PawTrail from './components/PawTrail';
 import CommissionStatus from './components/CommissionStatus';
 import LinkButton from './components/LinkButton';
-import { CONFIG } from './constants';
 import { Eye, EyeOff } from 'lucide-react';
+import { CommissionStatus as StatusEnum } from './types';
+
+// NOTE: This configuration is for the React version only (currently disabled).
+// The live application uses the configuration in index.html.
+const CONFIG = {
+  artistName: "Clair",
+  tagline: "Digital Sculptor & 3D modeler",
+  status: StatusEnum.CLOSED,
+  links: [
+    {
+      id: '1',
+      label: 'Instagram',
+      url: '#',
+      iconName: 'Instagram'
+    },
+    {
+      id: '2',
+      label: 'Reddit',
+      url: '#',
+      iconName: 'MessageCircle'
+    },
+    {
+      id: '3',
+      label: 'TOS das Comissões (Português)',
+      url: '#',
+      iconName: 'FileText'
+    },
+    {
+      id: '4',
+      label: 'Commission TOS (English)',
+      url: '#',
+      iconName: 'FileText'
+    }
+  ]
+};
 
 const App: React.FC = () => {
   const [trailsEnabled, setTrailsEnabled] = useState(true);
